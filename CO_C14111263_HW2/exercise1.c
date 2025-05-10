@@ -62,34 +62,37 @@ uint32_t Log2(uint32_t N)
 
 float PI(void)
 {
-    /* description: Gregory-Leibniz series
-    * 
-    *    we use Leibniz formula to approximate Pi
-    * 
-    *    pi/4 = (1 - 1/3 + 1/5 - 1/7 + 1/9 - ...)
-    *    pi   = 4(1 - 1/3 + 1/5 - 1/7 + 1/9 - ...)
-    * 
-    */
     asm volatile(
-        #include "pi.c"
-        : [add_cnt] "+r"(add_cnt), [fadd_cnt] "+r"(fadd_cnt), [sub_cnt] "+r"(sub_cnt), [fsub_cnt] "+r"(fsub_cnt), [mul_cnt] "+r"(mul_cnt), [div_cnt] "+r"(div_cnt), [fdiv_cnt] "+r"(fdiv_cnt), [lw_cnt] "+r"(lw_cnt), [sw_cnt] "+r"(sw_cnt), [others_cnt] "+r"(others_cnt), [pi] "+f"(pi)
+    #include "pi.c"
+        : [add_cnt] "+r"(add_cnt), [fadd_cnt] "+r"(fadd_cnt),
+          [sub_cnt] "+r"(sub_cnt), [fsub_cnt] "+r"(fsub_cnt),
+          [mul_cnt] "+r"(mul_cnt), [div_cnt] "+r"(div_cnt),
+          [fdiv_cnt] "+r"(fdiv_cnt), [lw_cnt] "+r"(lw_cnt),
+          [sw_cnt] "+r"(sw_cnt), [others_cnt] "+r"(others_cnt),
+          [pi] "+f"(pi)
         : [N] "r"(iter)
-        : "f1", "f2", "t1", "t2", "t3", "t4"
+        : "f0", "f1", "f2", "f3", "t1", "t2", "t3"
     );
     pi = 4 * pi;
     return pi;
 }
 
+
 uint32_t bit_reverse(uint32_t b, uint32_t m)
 {
-    asm volatile (
-        #include "bit_reverse.c"
-        : [b] "+r"(b), [lw_cnt] "+r"(lw_cnt), [add_cnt] "+r"(add_cnt), [sub_cnt] "+r"(sub_cnt), [sw_cnt] "+r"(sw_cnt), [others_cnt] "+r"(others_cnt)
-        : [m] "r"(m)
-        : "t0", "t1", "t2"
-    );
+    asm volatile(
+    #include "bit_reverse.c"
+        : [b] "+r"(b), [lw_cnt] "+r"(lw_cnt), [add_cnt] "+r"(add_cnt),
+        [sub_cnt] "+r"(sub_cnt), [sw_cnt] "+r"(sw_cnt), [others_cnt] "+r"(others_cnt)
+        : [temp] "r"(32 - m)
+        : "t0", "t1", "t2", "t3"
+);
+
+
+
     return b;
 }
+
 
 void fft(Complex *x, uint32_t N)
 {

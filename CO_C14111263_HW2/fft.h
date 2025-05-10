@@ -25,6 +25,13 @@ int dsub_cnt = 0;
 int dmul_cnt = 0;
 int ddiv_cnt = 0;
 
+// Float memory access
+int flw_cnt = 0;
+int fsw_cnt = 0;
+
+const int flw_CPI = 20;
+const int fsw_CPI = 15;
+
 // Given baseline CPI
 const int add_CPI = 4;
 const int sub_CPI = 4;
